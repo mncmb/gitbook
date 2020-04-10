@@ -85,7 +85,7 @@ Hum, so arg_address, which is the location of the page that has been allocated, 
 
 When looking for the newly created page in memory, it can be found by searching for pages with read/write/execute permissions or `ERW` in x64dbg. Since this permission is uncommon for normal operations you can spot your page pretty easy through this.
 
-![externally allocated page](pics/finding_virtualallocex.png)
+![externally allocated page](pics/pysh_inj/finding_virtualallocex.png)
 
 You can see the marked page and how it has the ERW permissions. This permission stands out among other pages and it is uncommon for processes to rewrite pages that get executed / seeing Execute and Write permissions together. 
 
@@ -103,7 +103,7 @@ __After a bit of digging I found out that I probably have to modify the return t
 We could continue with the execution of the script but since we got a wrong address we will most likely run into a problem when our thread gets started at that location.
 
 Switching over to the log in x64dbg shows the following:
-![wrong address log](pics/exception_wrong_address.png)
+![wrong address log](pics/pysh_inj/exception_wrong_address.png)
 
 So I am unsure why exactly this address was picked and we ran into a problem at `0x007FFA2732FBFE` but this is outside of the addressing space that the highest memory location page in our program has, so that might be a factor.
 
@@ -162,10 +162,10 @@ This comes from most of the used types effectively being either a pointer or a s
 Once everything is ported you can start the code and follow along with the changes in memory by attaching x64dbg on notepad.
 After the allocation took place you can inspect the page either by finding it by its `ERW` permissions or by the memory address printed on the console.
 
-![](pics/finding_mem_final.png)
+![](pics/pysh_inj/finding_mem_final.png)
 
 Right clicking it and selecting follow in disassembler (or dump if you want to better compare your shellcode to the data on the page), pressing run in x64dbg and enter in the console continues the injection with the writeprocmem.
 
-![](pics/shellcode_in_mem.png)
+![](pics/pysh_inj/shellcode_in_mem.png)
 
 Continuing with the program leads to the shellcode being executed which in turn starts calc.exe!
