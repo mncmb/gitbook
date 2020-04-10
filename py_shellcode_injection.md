@@ -1,4 +1,5 @@
-# porting python2 32bit shellcode injection example to Windows 10 and python3 
+# python shellcode injection
+## porting python2 32bit shellcode injection example to Windows 10 and python3 
 Since I wanted to gain some insights into code injection and I wasn't familiar with the Windows API, I thought doing this in Python would be easier. Turns out you can achieve the same in C++ with less issues because there are plenty of examples on how to do simple code injection with VirtualAllocEx and CreateRemoteThread out there. Some of the problems encountered have to do with how `ctypes`, the python library for foreign function calls, interacts with Windows DLLs and which types it uses by default. 
 
 Still, if you are not too familiar with the subject this can serve as a good introduction into process injection and debugging the procedure, as well as a mini intro to the Windows API.
