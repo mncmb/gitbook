@@ -42,7 +42,7 @@ The shellcode execution in an exe file can either be done by specifying the code
 	WaitForSingleObject(thread, 0);
 ```
 
-<!-- ![](pics/shellcode_exec_with_thread.png) -->
+<!-- ![](pics/winhook/shellcode_exec_with_thread.png) -->
 
 or by casting it to a function pointer and invoking that function.
 
@@ -52,19 +52,19 @@ or by casting it to a function pointer and invoking that function.
     VirtualProtect(exec, lensh, PAGE_EXECUTE_READ, &oldprotect);
 	((void(*)())exec)();
 ```
-<!-- ![](pics/shellcode_exec_with_funcPtr_casting.png) -->
+<!-- ![](pics/winhook/shellcode_exec_with_funcPtr_casting.png) -->
 
 The latter didn't work for me and timed out the msfconsole handler, but only when compiled as a DLL! When compiling the code as an .exe the shellcode worked just fine. Not sure why this is. Changing threading compilation flags was my first guess but did not seem to solve the issue.
 
 This is the output of the handler when trying to connect:
 
-![](pics/dll_code_nonThreadedShellcodeStart.png)
+![](pics/winhook/dll_code_nonThreadedShellcodeStart.png)
 
 It is simply sitting there, timing out and dying. Poor thing.
 
 Also, when starting the _threaded shellcode_ dll through rundll32.exe, the code has to have either an endless loop or a sleep after the `CreateThread` call. If this is not in place, the DLL function seems to exit and kills the process while the meterpreter reverse shell hasn't even been established. Another option is simply calling a non existing method. This pops up an error _MessageBox_ that keeps the process alive. Obviously this is only an option while testing.
 
-![](pics/2020.06.11-22.34_1.gif)
+![](pics/winhook/2020.06.11-22.34_1.gif)
 
 I believe this an issue of the specific shellcode in use. Not sure exactly why it behaves like it does but might just be the main thread exiting and not waiting for the meterpreter thread.
 
@@ -77,7 +77,7 @@ Nonetheless having other options is always nice so I will keep information on bo
 __Visual Studio injected DLL debugging__  
 It is actually pretty easy to debug an injected DLL with Visual Studio. You just need to open a DLL project, build your DLL and attach VS to the process you want to inject the DLL into. Then comes the injection - nothing fancy is required, a basic DLL injection works fine - and thats it.
 
-![](pics/dll_debug_attach_to_process.png)
+![](pics/winhook/dll_debug_attach_to_process.png)
 
 The information was found on the Game Hacking forums ([VS debugging of DLL](https://guidedhacking.com/threads/debugging-dll-for-internal-hack.7760/)). 
 
@@ -113,7 +113,7 @@ Information on tracing can also be found in the [x64dbg documentation](https://h
 Since the example programm is self built, an arbitrary function can be picked. I first tried it with `OutputDebugString`.  
 Initially I had some issues because I wanted to modify the jump location by subtraction a pointer to my Modified function from the destination address of the jump. This didn't work because my code wasn't within the 2GB boundary for jumps. And since `jmp` only allows jumps that fit within 32 bits I had to pick another approach
 
-![](pics/failedSimpleProg_OutputDebugString_JumpTable.png) 
+![](pics/winhook/failedSimpleProg_OutputDebugString_JumpTable.png) 
 
 In the above image you can see the jump to the kernel32 function code from the memory address that gets returned by referencing the function `OutputDebugStringA`. In this prologue the function gets handed a refernce to its only argument in `ECX`. `ECX` is the first argument for all common windows calling conventions, be it 32 or 64 bit. 
 
@@ -196,6 +196,6 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved ) {
 
 and used it with a basic dll injector.
 
-![](pics/hook.gif)
+![](pics/winhook/hook.gif)
 
 As you can see in the above gif, executing the program in powershell doesn't give any output. After hooking the function and redirecting the `OutputDebugString` arg into printf, the secret is revealed.
