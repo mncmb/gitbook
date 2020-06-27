@@ -1,4 +1,4 @@
-# init
+# windows API hooking
 This is a little excercise that tries to solve the following task:  
 hook a Win API function that gets called in an executable
 

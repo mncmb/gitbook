@@ -1,4 +1,4 @@
-# init
+# htb cheat sheet
 
 ## vi
 :w !sudo tee %
